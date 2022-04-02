@@ -1,0 +1,10 @@
+/old
+/dist
+/build
+/__pycache__
+/presets
+logo.ico
+logo.png
+old_py.lnk
+test.spec
+todo.txt
