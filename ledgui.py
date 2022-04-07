@@ -35,6 +35,7 @@ class MainScreen(QDialog):
 
         self.testonoff=True
         self.timer = QTimer(self)
+        self.closer = QTimer(self)
 
         self.Slider_R.valueChanged.connect(self.do_action)
         self.Slider_G.valueChanged.connect(self.do_action)
@@ -209,7 +210,7 @@ class MainScreen(QDialog):
             self.Slider_G.setSliderPosition(0)
             self.Slider_B.setSliderPosition(0)
             self.timer.timeout.connect(self.fade)
-            self.timer.start(100)
+            self.timer.start(50)
 
             self.Slider_R.setEnabled(False)
             self.Slider_G.setEnabled(False)
@@ -301,6 +302,15 @@ class MainScreen(QDialog):
 
     def do_music(self):
         if (self.Button_music.isChecked()):
+            #lel fade
+            self.red=True
+            self.green=False
+            self.blue=False
+            self.test=False
+            self.Slider_R.setSliderPosition(0)
+            self.Slider_G.setSliderPosition(0)
+            self.Slider_B.setSliderPosition(0)
+
             print('Music_Reactive')
             self.i=0
             self.timer.timeout.connect(self.music)
@@ -311,16 +321,15 @@ class MainScreen(QDialog):
             self.cmpl=False
             self.cmpl=convert.mp3()
             if (self.cmpl==True):
-                # print(self.wf.getnchannels())
-                # def callback(in_data, frame_count, time_info, status):
-                #     data = self.wf.readframes(frame_count)
-                #     return (data, pyaudio.paContinue)
-                # self.stream = self.p.open(format=self.p.get_format_from_width(self.wf.getsampwidth()),
-                #             # channels=self.wf.getnchannels(),
-                #             channels=1,
-                #             rate=self.wf.getframerate(),
-                #             input=True)
-                #             #stream_callback=callback)
+                #stopping effect after music ends
+                self.closer.timeout.connect(self.discon)
+                frames = self.wf.getnframes()
+                rate = self.wf.getframerate()
+                duration = frames / float(rate)
+                self.closer.start(duration * 1000)
+                print("duration: ",duration)
+
+                print("getting the bpm...")
                 self.beats=bpm.bpm_detect(self.file)
                 self.tmp=60000/self.beats
                 self.timer.start(self.tmp)
@@ -345,7 +354,7 @@ class MainScreen(QDialog):
             winsound.PlaySound(None, winsound.SND_PURGE)
             self.old=0
             self.cmpl=False
-            #print(self.idk)
+
             self.Slider_R.setEnabled(True)
             self.Slider_G.setEnabled(True)
             self.Slider_B.setEnabled(True)
@@ -354,6 +363,13 @@ class MainScreen(QDialog):
             self.Button_smooth.setEnabled(True)
             self.Button_audio.setEnabled(True)
             self.Button_flash.setEnabled(True)
+
+    def discon(self):
+        self.Button_music.setChecked(False)
+        self.do_music()
+        self.Button_fade.setChecked(True)
+        self.do_fade()
+        self.closer.disconnect()
 
     def music(self):
         if (self.Button_music.isChecked()):
