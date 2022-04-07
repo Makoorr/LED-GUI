@@ -47,12 +47,12 @@ class MainScreen(QDialog):
         self.Button_smooth.clicked.connect(self.do_smooth)
         self.Button_music.clicked.connect(self.do_music)
 
-    porteur.fn()
-    port = porteur.inp
-    print ("port : ",port)
+    # porteur.fn()
+    # port = porteur.inp
+    # print ("port : ",port)
 
-    light=serial.Serial(port, baudrate=9600, timeout=.1)
-    light.write(('255,w'+'\r\n').encode())
+    # light=serial.Serial(port, baudrate=9600, timeout=.1)
+    # light.write(('255,w'+'\r\n').encode())
 
     def do_action(self):
         self.R.setGeometry(QtCore.QRect(60, 350, 101, 41))
@@ -72,7 +72,7 @@ class MainScreen(QDialog):
         
         self.Aerobotix.setStyleSheet("color: rgb("+(str)(self.Slider_R.value())+","+(str)(self.Slider_G.value())+","+(str)(self.Slider_B.value())+")")
 
-        self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
+        # self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
 
     def do_onoff(self):
         if (self.testonoff==False):
@@ -158,7 +158,7 @@ class MainScreen(QDialog):
                 self.Slider_G.setSliderPosition(0)
                 self.Slider_B.setSliderPosition(0)
 
-            self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
+            # self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
 
 
     def do_smooth(self):
@@ -196,7 +196,7 @@ class MainScreen(QDialog):
             self.Slider_G.setSliderPosition(self.colors_G[self.i])
             self.Slider_B.setSliderPosition(self.colors_B[self.i])
 
-            self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
+            # self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
 
 
     def do_fade(self):
@@ -246,9 +246,9 @@ class MainScreen(QDialog):
                     self.blue=False
 
                 if (self.test==False):
-                    self.Slider_R.setSliderPosition(self.Slider_R.value()+15)
+                    self.Slider_R.setSliderPosition(self.Slider_R.value()+5)
                 else:
-                    self.Slider_R.setSliderPosition(self.Slider_R.value()-15)
+                    self.Slider_R.setSliderPosition(self.Slider_R.value()-5)
             #--------GREEN
             elif self.green==True:
                 if(self.Slider_G.value()>=255):
@@ -264,9 +264,9 @@ class MainScreen(QDialog):
                     self.blue=True
 
                 if (self.test==False):
-                    self.Slider_G.setSliderPosition(self.Slider_G.value()+15)
+                    self.Slider_G.setSliderPosition(self.Slider_G.value()+5)
                 else:
-                    self.Slider_G.setSliderPosition(self.Slider_G.value()-15)
+                    self.Slider_G.setSliderPosition(self.Slider_G.value()-5)
             #--------BLUE
             elif self.blue==True:
                 if(self.Slider_B.value()>=255):
@@ -283,11 +283,11 @@ class MainScreen(QDialog):
                     self.blue=False
 
                 if (self.test==False):
-                    self.Slider_B.setSliderPosition(self.Slider_B.value()+15)
+                    self.Slider_B.setSliderPosition(self.Slider_B.value()+5)
                 else:
-                    self.Slider_B.setSliderPosition(self.Slider_B.value()-15)
+                    self.Slider_B.setSliderPosition(self.Slider_B.value()-5)
 
-            self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
+            # self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
 
 
     CHUNK = 2**11
@@ -392,7 +392,7 @@ class MainScreen(QDialog):
                 except:
                     None
 
-            self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
+            # self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
 
 
     CHUNK = 2**11
@@ -403,6 +403,15 @@ class MainScreen(QDialog):
 
     def do_audio(self):
         if (self.Button_audio.isChecked()):
+            #lel fade
+            self.red=True
+            self.green=False
+            self.blue=False
+            self.test=False
+            self.Slider_R.setSliderPosition(0)
+            self.Slider_G.setSliderPosition(0)
+            self.Slider_B.setSliderPosition(0)
+
             print('Audio_Reactive')
             self.stream=self.p.open(format=pyaudio.paInt16,channels=1,rate=self.RATE,input=True,
                                     frames_per_buffer=self.CHUNK)
@@ -438,6 +447,63 @@ class MainScreen(QDialog):
 
     def audio(self):
         if (self.Button_audio.isChecked()):
+            #lel fade
+            #-------RED
+            if self.red==True:
+                if(self.Slider_R.value()>=255):
+                    self.Slider_R.setSliderPosition(255)
+                    self.test=True
+                elif(self.Slider_R.value()<=0):
+                    self.Slider_R.setSliderPosition(0)
+                    self.test=False
+                    #init
+                    self.red=False
+                    self.green=True
+                    self.blue=False
+
+                if (self.test==False):
+                    self.Slider_R.setSliderPosition(self.Slider_R.value()+5)
+                else:
+                    self.Slider_R.setSliderPosition(self.Slider_R.value()-5)
+            #--------GREEN
+            elif self.green==True:
+                if(self.Slider_G.value()>=255):
+                    self.Slider_G.setSliderPosition(255)
+                    self.test=True
+                elif(self.Slider_G.value()<=0):
+                    self.Slider_G.setSliderPosition(0)
+                    self.test=False
+
+                    #init
+                    self.red=False
+                    self.green=False
+                    self.blue=True
+
+                if (self.test==False):
+                    self.Slider_G.setSliderPosition(self.Slider_G.value()+5)
+                else:
+                    self.Slider_G.setSliderPosition(self.Slider_G.value()-5)
+            #--------BLUE
+            elif self.blue==True:
+                if(self.Slider_B.value()>=255):
+                    self.Slider_B.setSliderPosition(255)
+                    self.test=True
+
+                elif(self.Slider_B.value()<=0):
+                    self.Slider_B.setSliderPosition(0)
+                    self.test=False
+
+                    #init
+                    self.red=True
+                    self.green=False
+                    self.blue=False
+
+                if (self.test==False):
+                    self.Slider_B.setSliderPosition(self.Slider_B.value()+5)
+                else:
+                    self.Slider_B.setSliderPosition(self.Slider_B.value()-5)
+
+
             data=np.frombuffer(self.stream.read(self.CHUNK),dtype=np.int16)
             avg=np.average(np.abs(data)*2)
             diff=avg-self.old
@@ -483,7 +549,7 @@ class MainScreen(QDialog):
                     self.Slider_B.setSliderPosition(self.Slider_B.value()-val)
             
 
-            self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
+            # self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
             self.old=avg
 
         else:
