@@ -441,14 +441,16 @@ class MainScreen(QDialog):
 
                     self.dev_index = self.dev['index']
                     print('dev_index', self.dev_index)
-
-            self.stream=self.p.open(format = pyaudio.paInt16,
+            try:
+                self.stream=self.p.open(format = pyaudio.paInt16,
                                     channels = 1,
                                     rate = self.RATE,
                                     input = True,
                                     input_device_index = self.dev_index,
                                     frames_per_buffer = self.CHUNK)
-
+            except:
+                None #Open tab kolou yenabli stereo mix
+            
             self.old=0
             self.timer.timeout.connect(self.audio)
             self.timer.start(30)
