@@ -4,6 +4,7 @@ from PyQt5.uic import loadUi
 from PyQt5.QtCore import QTimer
 
 import sys
+import os
 
 import serial
 import wave
@@ -12,6 +13,7 @@ import winsound
 import convert
 import bpm
 import pyaudio
+import soundmix
 import porteur
 
 import warnings
@@ -416,6 +418,10 @@ class MainScreen(QDialog):
     old=0
     val=0
     p=pyaudio.PyAudio()
+    w = None
+    def closeEvent(self, event):
+        if self.w:
+            self.w.close()
 
     def do_audio(self):
         if (self.Button_audio.isChecked()):
@@ -429,16 +435,11 @@ class MainScreen(QDialog):
             self.Slider_B.setSliderPosition(0)
 
             print('Audio_Reactive')
-            # self.stream=self.p.open(format=pyaudio.paInt16,channels=1,rate=self.RATE,input=True,
-            #                         frames_per_buffer=self.CHUNK)
             for i in range(self.p.get_device_count()):
                 self.dev = self.p.get_device_info_by_index(i)
-                print(self.dev['name'])
-                print("api",self.dev['hostApi'])
                 if (    ('Stereo Mix' in self.dev['name'] or
                         'Mixage stéréo' in self.dev['name']) and
                         self.dev['hostApi'] == 0):
-
                     self.dev_index = self.dev['index']
                     print('dev_index', self.dev_index)
             try:
@@ -448,27 +449,33 @@ class MainScreen(QDialog):
                                     input = True,
                                     input_device_index = self.dev_index,
                                     frames_per_buffer = self.CHUNK)
-            except:
-                None #Open tab kolou yenabli stereo mix
-            
-            self.old=0
-            self.timer.timeout.connect(self.audio)
-            self.timer.start(30)
-            self.Slider_R.setEnabled(False)
-            self.Slider_G.setEnabled(False)
-            self.Slider_B.setEnabled(False)
+                
+                self.old=0
+                self.timer.timeout.connect(self.audio)
+                self.timer.start(30)
+                self.Slider_R.setEnabled(False)
+                self.Slider_G.setEnabled(False)
+                self.Slider_B.setEnabled(False)
 
-            self.Button_fade.setEnabled(False)
-            self.Button_music.setEnabled(False)
-            self.Button_smooth.setEnabled(False)
-            self.Button_flash.setEnabled(False)
-            
+                self.Button_fade.setEnabled(False)
+                self.Button_music.setEnabled(False)
+                self.Button_smooth.setEnabled(False)
+                self.Button_flash.setEnabled(False)
+            except: #If stereo mix is disabled
+                soundmix.fn() #Open tab kolou yenabli stereo mix
+                self.do_onoff()
+                try:
+                    self.timer.disconnect()
+                    self.stream.stop_stream()
+                except:
+                    None
+                finally:
+                    self.Button_onoff.setEnabled(False)
+                    self.closeEvent()
+
         else:
             try:
                 self.timer.disconnect()
-            except:
-                None
-            try:
                 self.stream.stop_stream()
             except:
                 None
