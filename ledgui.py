@@ -429,8 +429,26 @@ class MainScreen(QDialog):
             self.Slider_B.setSliderPosition(0)
 
             print('Audio_Reactive')
-            self.stream=self.p.open(format=pyaudio.paInt16,channels=1,rate=self.RATE,input=True,
-                                    frames_per_buffer=self.CHUNK)
+            # self.stream=self.p.open(format=pyaudio.paInt16,channels=1,rate=self.RATE,input=True,
+            #                         frames_per_buffer=self.CHUNK)
+            for i in range(self.p.get_device_count()):
+                self.dev = self.p.get_device_info_by_index(i)
+                print(self.dev['name'])
+                print("api",self.dev['hostApi'])
+                if (    ('Stereo Mix' in self.dev['name'] or
+                        'Mixage stéréo' in self.dev['name']) and
+                        self.dev['hostApi'] == 0):
+
+                    self.dev_index = self.dev['index']
+                    print('dev_index', self.dev_index)
+
+            self.stream=self.p.open(format = pyaudio.paInt16,
+                                    channels = 1,
+                                    rate = self.RATE,
+                                    input = True,
+                                    input_device_index = self.dev_index,
+                                    frames_per_buffer = self.CHUNK)
+
             self.old=0
             self.timer.timeout.connect(self.audio)
             self.timer.start(30)
@@ -527,42 +545,49 @@ class MainScreen(QDialog):
 
             def Gmap( x,  in_min,  in_max, out_min, out_max):
                 return int((x - in_min) * (out_max - out_min) / (in_max - in_min ) + out_min)
-            val=Gmap(diff,0,20000,0,255)
+            val=3*Gmap(diff,0,20000,0,255)
 
             print('val :'+str(val))
             print('---')
 
-            if(val<50):
-                self.Slider_R.setSliderPosition(self.Slider_R.value())
-                self.Slider_G.setSliderPosition(self.Slider_G.value())
-                self.Slider_B.setSliderPosition(self.Slider_B.value())
+            if(self.Slider_R.value()+val<255):
+                self.Slider_R.setSliderPosition(self.Slider_R.value()+val)
+            if(self.Slider_G.value()+val<255):
+                self.Slider_G.setSliderPosition(self.Slider_G.value()+val)
+            if(self.Slider_B.value()+val<255):
+                self.Slider_B.setSliderPosition(self.Slider_B.value()+val)
 
-            elif(val<100):
-                #red_tnakes
-                if self.Slider_R.value()-val/4>=0:
-                    self.Slider_R.setSliderPosition(self.Slider_R.value()-val/4)
-                #green_tzid
-                if self.Slider_G.value()+val>=255:
-                    self.Slider_G.setSliderPosition(self.Slider_G.value()-val)
-                else:
-                    self.Slider_G.setSliderPosition(self.Slider_G.value()+val)
-                #blue_tzid
-                if self.Slider_B.value()+val/2<=255:
-                    self.Slider_B.setSliderPosition(self.Slider_B.value()+val/2)
-                else:
-                    self.Slider_B.setSliderPosition(self.Slider_B.value()-val/2)
+            # if(val<50):
+            #     self.Slider_R.setSliderPosition(self.Slider_R.value())
+            #     self.Slider_G.setSliderPosition(self.Slider_G.value())
+            #     self.Slider_B.setSliderPosition(self.Slider_B.value())
 
-            elif(val>100):
-                if self.Slider_R.value()+val<=255:
-                    self.Slider_R.setSliderPosition(self.Slider_R.value()+val)
-                #green_tzid
-                if self.Slider_G.value()+val>=255:
-                    self.Slider_G.setSliderPosition(self.Slider_G.value()-val)
-                else:
-                    self.Slider_G.setSliderPosition(self.Slider_G.value()+val)
-                #blue_tzid
-                if self.Slider_B.value()-val>=0:
-                    self.Slider_B.setSliderPosition(self.Slider_B.value()-val)
+            # elif(val<100):
+            #     #red_tnakes
+            #     if self.Slider_R.value()-val/4>=0:
+            #         self.Slider_R.setSliderPosition(self.Slider_R.value()-val/4)
+            #     #green_tzid
+            #     if self.Slider_G.value()+val>=255:
+            #         self.Slider_G.setSliderPosition(self.Slider_G.value()-val)
+            #     else:
+            #         self.Slider_G.setSliderPosition(self.Slider_G.value()+val)
+            #     #blue_tzid
+            #     if self.Slider_B.value()+val/2<=255:
+            #         self.Slider_B.setSliderPosition(self.Slider_B.value()+val/2)
+            #     else:
+            #         self.Slider_B.setSliderPosition(self.Slider_B.value()-val/2)
+
+            # elif(val>100):
+            #     if self.Slider_R.value()+val<=255:
+            #         self.Slider_R.setSliderPosition(self.Slider_R.value()+val)
+            #     #green_tzid
+            #     if self.Slider_G.value()+val>=255:
+            #         self.Slider_G.setSliderPosition(self.Slider_G.value()-val)
+            #     else:
+            #         self.Slider_G.setSliderPosition(self.Slider_G.value()+val)
+            #     #blue_tzid
+            #     if self.Slider_B.value()-val>=0:
+            #         self.Slider_B.setSliderPosition(self.Slider_B.value()-val)
             
 
             # self.light.write((str(self.Slider_R.value())+'\r\n').encode()+(str(self.Slider_G.value())+'\r\n').encode()+(str(self.Slider_B.value())+'\r\n').encode())
