@@ -11,3 +11,6 @@ FEATURES
   - Simple Color Chooser
   - Music Reactive
   - Fade/Strobe/Flash
+
+### Preview of the executable
+![image](https://github.com/Makoorr/LED-GUI/assets/99105286/6cce84fd-694c-42fa-a726-7f77160e27f2)
