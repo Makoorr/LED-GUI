@@ -11,4 +11,4 @@ I used different modules for this like pyaudio, numpy, wave and serial for the a
 https://github.com/Makoorr/LED-GUI/assets/99105286/a7940d06-cbd7-4463-853f-fe434eab2d02
 
 # Preview of the executable
-![image](https://github.com/Makoorr/LED-GUI/assets/99105286/6cce84fd-694c-42fa-a726-7f77160e27f2)
+![](https://github.com/Makoorr/LED-GUI/blob/main/assets/preview.gif)
